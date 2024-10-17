@@ -1,6 +1,8 @@
 import canalruidoso as f 
 from scapy.all import * 
 from scapy.all import TCP, IP
+import time
+import random
 
 # Elegimos parametros
 source_ip = '127.0.0.1'
@@ -8,17 +10,28 @@ dest_ip = '127.0.0.1'
 dest_port = 8000
 src_port = 5000
 
-# Creamos la parte de IP
+num_seq = random.randint(1, 99)
+num_ack = 0
+
 ip = IP(dst=dest_ip,src =source_ip)
+tcp = TCP(dport=dest_port, sport =src_port, seq=num_seq, ack=num_ack, flags="S")
+syn_packet = ip/tcp 
 
-# Creamos la parte de TCP
-tcp = TCP(dport=dest_port, sport =src_port)
+respuesta = False
 
-# Los combinamos
-packet = ip/tcp
+f.envio_paquetes_inseguro(syn_packet)
 
-# "Enviamos" el paquete
-f.envio_paquetes_inseguro(packet)
+'''
+while respuesta == False: 
+    pkt_capturado = sniff(iface = interface, filter=filter_str, prn=lambda x: x.show(), count=1, timeout=3)
+    if pkt_capturado:
+        respuesta = True
+    else:
+        f.envio_paquetes_inseguro(syn_packet) # Retransmito el packet
+
+# Examino el packet recibido y mando ACK
+
+pkt_capturado.show()
+'''
 
 
-# hola
