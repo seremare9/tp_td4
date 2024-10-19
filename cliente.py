@@ -25,7 +25,40 @@ respuesta = False
 # syn_packet.show()
 # print("Fin packet")
 
-f.envio_paquetes_inseguro(syn_packet)
+f.envio_paquetes_inseguro(syn_packet) # Se envía el paquete que contiene el SYN.
+
+
+interface = "Software Loopback Interface 1"
+
+listen_port = 5000  
+
+print(f"Listening for TCP packets on port {listen_port}...")
+filter_str = f"tcp port {listen_port}" 
+
+pkt_capturado = sniff(iface = interface, prn=lambda x: x.show(), timeout=120) # El cliente se queda escuchando en el puerto 5000
+
+if pkt_capturado:
+
+    paquete = pkt_capturado[0]
+    flag = paquete[TCP].flags
+
+    if flag == "SA": # Si recibe un SYN+ACK, manda un ACK
+        paquete = pkt_capturado[0] # Recibe paquete del servidor con SYN+ACK
+
+        ip = IP(dst=dest_ip,src =source_ip)
+        tcp = TCP(dport=dest_port, sport =src_port, seq=paquete[TCP].ack, ack=paquete[TCP].seq+1, flags="A")
+        ack_packet = ip/tcp 
+
+        f.envio_paquetes_inseguro(ack_packet) # Se envía el paquete que contiene el ACK
+
+    elif flag == "F":
+        paquete = pkt_capturado[0] # Recibe paquete del servidor con FIN
+
+        ip = IP(dst=dest_ip,src =source_ip)
+        tcp = TCP(dport=dest_port, sport =src_port, seq=paquete[TCP].ack, ack=paquete[TCP].seq+1, flags="FA")
+        finack_packet = ip/tcp 
+
+        f.envio_paquetes_inseguro(finack_packet) # Se envía el paquete que contiene el FIN+ACK    
 
 # while respuesta == False: 
 #     pkt_capturado = sniff(iface = "lo0", prn=lambda x: x.show(), count=1, timeout=3)
