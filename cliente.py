@@ -10,7 +10,7 @@ dest_ip = '127.0.0.1'
 dest_port = 8000
 src_port = 5000
 
-num_seq = random.randint(1, 10000)
+num_seq = random.randint(1, 10000) 
 num_ack = 0
 
 print(num_seq)
@@ -28,6 +28,12 @@ listen_port = 5000
 
 conectado = True # Cuando quiera terminar la conexión lo seteo en False
 
+def mostrar_flags(pkt): # Función auxiliar que voy a usar para mostrar los paquetes capturados
+    if TCP in pkt:
+        flags = pkt[TCP].flags
+        if flags & 0x12 == 0x12 or flags & 0x01 == 0x01 or flags & 0x10 == 0x10:
+            pkt.show()
+
 while conectado: # Acá manejamos todo lo que pasa después de que se envia el SYN
     '''
     Idea del while: Luego de enviar un paquete SYN ACK o FIN, repito el while para escuchar el siguiente paquete.
@@ -36,47 +42,44 @@ while conectado: # Acá manejamos todo lo que pasa después de que se envia el S
     print(f"Listening for TCP packets on port {listen_port}...")
     filter_str = f"tcp port {listen_port}"
 
-    pkt_capturado = sniff(iface = interface, prn=lambda x: x.show(), count=1, timeout=3) 
+    pkt_capturado = sniff(iface = interface, prn=mostrar_flags, count=1, timeout=3) 
 
     if pkt_capturado: # Si capturó un paquete sin delay
 
         paquete = pkt_capturado[0]
+
         flag = paquete[TCP].flags
 
         # Checksum
         if paquete[IP].chksum != paquete[IP].calc_chksum() or paquete[TCP].chksum != paquete[TCP].calc_chksum():
             # En la slide dice que hay que computar el checksum y comprobar que todos los bits sean 0 (si no lo son hay error)
             # El paquete llego corrupto y hay que retransmitir
-            None # Esto lo voy a borrar despues
+            pass # Esto lo voy a borrar despues
         
         else: # Si el paquete que recibí no está corrupto, mando la respuesta al cliente
 
             if flag == "SA": # Si recibe un SYN+ACK, manda un ACK
-                paquete = pkt_capturado[0] # Recibe paquete del servidor con SYN+ACK
                 ip = IP(dst=dest_ip,src =source_ip)
                 tcp = TCP(dport=dest_port, sport =src_port, seq=paquete[TCP].ack, ack=paquete[TCP].seq+1, flags="A")
                 ack_packet = ip/tcp 
-
                 f.envio_paquetes_inseguro(ack_packet) # Se envía el paquete que contiene el ACK
 
             elif flag == "F":
-                paquete = pkt_capturado[0] # Recibe paquete del servidor con FIN
-
                 ip = IP(dst=dest_ip,src =source_ip)
                 tcp = TCP(dport=dest_port, sport =src_port, seq=paquete[TCP].ack, ack=paquete[TCP].seq+1, flags="FA")
                 finack_packet = ip/tcp 
-
                 f.envio_paquetes_inseguro(finack_packet) # Se envía el paquete que contiene el FIN+ACK 
 
             elif flag == "A": # Recibe el último ACK. Ya se puede cerrar la conexión
                 conectado = False
             
-             # # Hay que definir que hacer si llega un paquete con otra flag. Jaime dijo que lo ignoremos
+            else:
+                pass # Ignoro el paquete
                 
     else: # Si pasaron 3 segundos y no recibí ningún paquete
 
-        # Habría que ver como lo resolvemos (volvemos a enviar el paquete anterior?)
-        None 
+        pass # Habría que ver como lo resolvemos (volvemos a enviar el paquete anterior?)
+        
     
 
             

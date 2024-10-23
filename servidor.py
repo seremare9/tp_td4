@@ -9,12 +9,19 @@ listen_port = 8000
 
 conectado = True # Cuando quiera terminar la conexión lo seteo en False
 
+def mostrar_flags(pkt): # Función auxiliar que voy a usar para mostrar los paquetes capturados
+    if TCP in pkt:
+        flags = pkt[TCP].flags
+        # Verificar si las flags son SYN+ACK (0x12), ACK (0x10) o FIN+ACK (0x11)
+        if flags & 0x12 == 0x12 or flags & 0x10 == 0x10 or flags & 0x11 == 0x11:
+            pkt.show()
+
 while conectado:
 
     print(f"Listening for TCP packets on port {listen_port}...")
     filter_str = f"tcp port {listen_port}"
 
-    pkt_capturado = sniff(iface = interface, prn=lambda x: x.show(), count=1, timeout=3) 
+    pkt_capturado = sniff(iface = interface, prn=mostrar_flags, count=1, timeout=3) 
 
     if pkt_capturado: # Si capturó un paquete sin delay
 
@@ -24,7 +31,7 @@ while conectado:
         # Checksum
         if paquete[IP].chksum != paquete[IP].calc_chksum() or paquete[TCP].chksum != paquete[TCP].calc_chksum():
             # El paquete llego corrupto y hay que retransmitir
-            None # Esto lo voy a borrar despues
+            pass # Esto lo voy a borrar despues
         
         else: # Si el paquete que recibí no está corrupto, mando la respuesta al cliente
     
@@ -48,7 +55,10 @@ while conectado:
                 f.envio_paquetes_inseguro(ultimoack_packet)
 
                 conectado = False # Termino el while porque voy a cerrar la conexión. 
-                # Habría que ver que pasa si el cliente no recibe este ACK...
+     
+            else:
+                pass
 
-        # # Hay que definir que hacer si llega un paquete con otra flag. Jaime dijo que lo ignoremos
+    else: # Si pasaron 3 segundos y no recibí ningún paquete
+        pass # Hay que resolverlo
             
