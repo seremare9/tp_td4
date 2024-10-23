@@ -42,6 +42,13 @@ if pkt_capturado:
     paquete = pkt_capturado[0]
     flag = paquete[TCP].flags
 
+    # Checksum
+    if paquete[IP].chksum == paquete[IP].calc_chksum():
+        error_checksum = False # Llego ok
+    else:
+        error_checksum = True # como procedemos?
+        
+
     if flag == "SA": # Si recibe un SYN+ACK, manda un ACK
         paquete = pkt_capturado[0] # Recibe paquete del servidor con SYN+ACK
 

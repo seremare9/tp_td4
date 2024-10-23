@@ -19,6 +19,13 @@ if pkt_capturado:
         paquete = pkt[0]
         flag = paquete[TCP].flags
 
+        # Checksum
+        if paquete[IP].chksum == paquete[IP].calc_chksum():
+            error_checksum = False # Llego ok
+        else:
+            error_checksum = True # como procedemos?
+
+
         if flag == "S":
             ip = IP(dst=paquete[IP].src, src=paquete[IP].dst)
             tcp = TCP(dport=paquete[TCP].sport, sport=listen_port, seq=10, ack=paquete[TCP].seq+1, flags="SA")
