@@ -21,8 +21,8 @@ syn_packet = ip/tcp
 
 f.envio_paquetes_inseguro(syn_packet) # Se envía el paquete que contiene el SYN.
 
-# interface = "Software Loopback Interface 1" 
-interface = "lo0"
+interface = "Software Loopback Interface 1" 
+# interface = "lo0"
 
 listen_port = 5000  
 
@@ -36,7 +36,7 @@ while conectado: # Acá manejamos todo lo que pasa después de que se envia el S
     print(f"Listening for TCP packets on port {listen_port}...")
     filter_str = f"tcp port {listen_port}"
 
-    pkt_capturado = sniff(iface = interface, count=1, timeout=10) 
+    pkt_capturado = sniff(iface = interface, filter=filter_str, count=1, timeout=10) 
 
     contador_de_fallas = 0 # para que no loopee infinitas veces
 

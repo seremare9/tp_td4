@@ -2,8 +2,8 @@ from scapy.all import *
 import canalruidoso as f
 from scapy.all import TCP, IP
 
-interface = "lo0" 
-# interface = "Software Loopback Interface 1"
+# interface = "lo0" 
+interface = "Software Loopback Interface 1"
 
 listen_port = 8000  
 
@@ -16,7 +16,7 @@ while conectado and contador_de_fallas < 3:
     print(f"Listening for TCP packets on port {listen_port}...")
     filter_str = f"tcp port {listen_port}"
 
-    pkt_capturado = sniff(iface = interface, count=1, timeout=10) 
+    pkt_capturado = sniff(iface = interface, filter=filter_str, count=1, timeout=10) 
 
     if pkt_capturado: # Si capturó un paquete sin delay
 
