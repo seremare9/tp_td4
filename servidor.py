@@ -8,11 +8,11 @@ interface = "Software Loopback Interface 1"
 
 listen_port = 8000  
 
-conectado = True # Cuando quiera terminar la conexión lo seteo en False
+conectado = True
 
-contador_de_fallas = 0
+ultimo_packet_enviado = "NONE"
 
-while conectado and contador_de_fallas < 3:
+while conectado:
 
     print(f"Listening for TCP packets on port {listen_port}...")
     filter_str = f"tcp port {listen_port}"
@@ -27,16 +27,15 @@ while conectado and contador_de_fallas < 3:
         flags_esperadas = ("S", "A", "FA")
 
         if not(flag in flags_esperadas):
-            contador_de_fallas += 1
             continue # Paso a la siguiente iteración
 
         paquete.show()
 
         # Checksum
+        '''
 
-        ip_checksum = paquete[IP].chksum
+        # ip_checksum = paquete[IP].chksum
         tcp_checksum = paquete[TCP].chksum
-
 
         #print(f"Checksum IP del paquete con la flag {flag}: {ip_checksum}")
         print(f"Checksum TCP del paquete con la flag {flag}: {tcp_checksum}")
@@ -58,33 +57,51 @@ while conectado and contador_de_fallas < 3:
         if tcp_checksum != calc_checksum(bytes_tcp):
             print("El paquete está corrupto")
         else: # Si el paquete que recibí no está corrupto, mando la respuesta al cliente
-    
-            if flag == "S":
-                ip = IP(dst=paquete[IP].src, src=paquete[IP].dst)
-                tcp = TCP(dport=paquete[TCP].sport, sport=listen_port, seq=10, ack=paquete[TCP].seq+1, flags="SA")
-                synack_packet = ip/tcp 
-                f.envio_paquetes_inseguro(synack_packet)
+        '''
 
-            elif flag == "A":
-                time.sleep(20)
-                ip = IP(dst=paquete[IP].src, src=paquete[IP].dst)
-                tcp = TCP(dport=paquete[TCP].sport, sport=listen_port, seq=paquete[TCP].ack, ack=paquete[TCP].seq+1, flags="F")
-                fin_packet = ip/tcp 
-                f.envio_paquetes_inseguro(fin_packet)
+        if flag == "S":
+            ip = IP(dst=paquete[IP].src, src=paquete[IP].dst)
+            tcp = TCP(dport=paquete[TCP].sport, sport=listen_port, seq=10, ack=paquete[TCP].seq+1, flags="SA")
+            synack_packet = ip/tcp 
+            ultimo_packet_enviado = "SYN_ACK"
+            f.envio_paquetes_inseguro(synack_packet)
 
-            elif flag == "FA":
-                ip = IP(dst=paquete[IP].src, src=paquete[IP].dst)
-                tcp = TCP(dport=paquete[TCP].sport, sport=listen_port, seq=paquete[TCP].ack, ack=paquete[TCP].seq+1, flags="A")
-                ultimoack_packet = ip/tcp 
-                f.envio_paquetes_inseguro(ultimoack_packet)
+        elif flag == "A":
+            time.sleep(20)
+            ip = IP(dst=paquete[IP].src, src=paquete[IP].dst)
+            tcp = TCP(dport=paquete[TCP].sport, sport=listen_port, seq=paquete[TCP].ack, ack=paquete[TCP].seq+1, flags="F")            
+            fin_packet = ip/tcp 
+            ultimo_packet_enviado = "FIN"
+            f.envio_paquetes_inseguro(fin_packet)
 
-                conectado = False # Termino el while porque voy a cerrar la conexión. 
+        elif flag == "FA":
+            ip = IP(dst=paquete[IP].src, src=paquete[IP].dst)
+            tcp = TCP(dport=paquete[TCP].sport, sport=listen_port, seq=paquete[TCP].ack, ack=paquete[TCP].seq+1, flags="A")
+            ultimoack_packet = ip/tcp 
+            ultimo_packet_enviado = "ACK"
+            f.envio_paquetes_inseguro(ultimoack_packet)
+
+            conectado = False # Termino el while porque voy a cerrar la conexión.
      
-            else:
-                pass #capaz no haga falta xq ya filtramos antes
+        else:
+            continue 
 
     else: # Si pasaron 3 segundos y no recibí ningún paquete
-        contador_de_fallas += 1
-        continue # Hay que resolverlo, de momento paso a la siguiente iteracion
 
-print("Fin")
+        if ultimo_packet_enviado == "NONE": # Me mantengo en LISTEN
+            continue
+        elif ultimo_packet_enviado == "SYN_ACK": # Retransmito el paquete SYN ACK
+            f.envio_paquetes_inseguro(synack_packet)
+            
+        elif ultimo_packet_enviado == "FIN": # Retransmito el paquete FIN
+            f.envio_paquetes_inseguro(fin_packet)
+
+        elif ultimo_packet_enviado == "ACK": # Retransmito el paquete ACK
+            f.envio_paquetes_inseguro(ultimoack_packet)
+
+        else: # Paso a la siguiente iteración
+            continue
+
+        
+
+print("Fin de la conexión")
