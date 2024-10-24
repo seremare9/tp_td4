@@ -21,18 +21,12 @@ syn_packet = ip/tcp
 
 f.envio_paquetes_inseguro(syn_packet) # Se envía el paquete que contiene el SYN.
 
-interface = "Software Loopback Interface 1" 
-# interface = "lo0"
+# interface = "Software Loopback Interface 1" 
+interface = "lo0"
 
 listen_port = 5000  
 
 conectado = True # Cuando quiera terminar la conexión lo seteo en False
-
-def mostrar_flags(pkt): # Función auxiliar que voy a usar para mostrar los paquetes capturados
-    if TCP in pkt:
-        flags = pkt[TCP].flags
-        if flags & 0x12 == 0x12 or flags & 0x01 == 0x01 or flags & 0x10 == 0x10:
-            pkt.show()
 
 while conectado: # Acá manejamos todo lo que pasa después de que se envia el SYN
     '''
@@ -42,19 +36,37 @@ while conectado: # Acá manejamos todo lo que pasa después de que se envia el S
     print(f"Listening for TCP packets on port {listen_port}...")
     filter_str = f"tcp port {listen_port}"
 
-    pkt_capturado = sniff(iface = interface, prn=mostrar_flags, count=1, timeout=3) 
+    pkt_capturado = sniff(iface = interface, count=1, timeout=10) 
 
-    if pkt_capturado: # Si capturó un paquete sin delay
+    contador_de_fallas = 0 # para que no loopee infinitas veces
+
+    if pkt_capturado and contador_de_fallas < 3: # Si capturó un paquete sin delay
 
         paquete = pkt_capturado[0]
 
         flag = paquete[TCP].flags
 
+        flags_esperadas = ("SA", "A", "F")
+
+        if not(flag in flags_esperadas):
+            contador_de_fallas += 1
+            continue # Paso a la siguiente iteración
+
+        pkt_capturado.show()
+
         # Checksum
-        if paquete[IP].chksum != paquete[IP].calc_chksum() or paquete[TCP].chksum != paquete[TCP].calc_chksum():
-            # En la slide dice que hay que computar el checksum y comprobar que todos los bits sean 0 (si no lo son hay error)
-            # El paquete llego corrupto y hay que retransmitir
-            pass # Esto lo voy a borrar despues
+        ip_checksum = paquete[IP].chksum
+        tcp_checksum = paquete[TCP].chksum
+
+        print(f"Checksum IP del paquete con la flag {flag}: {ip_checksum}")
+        print(f"Checksum TCP del paquete con la flag {flag}: {tcp_checksum}")
+
+        if ip_checksum != 0 or tcp_checksum != 0:
+            print(f"El paquete con la flag {flag} está corrupto")
+            # Tengo que retransmitir
+            contador_de_fallas += 1
+            continue 
+
         
         else: # Si el paquete que recibí no está corrupto, mando la respuesta al cliente
 
@@ -74,14 +86,14 @@ while conectado: # Acá manejamos todo lo que pasa después de que se envia el S
                 conectado = False
             
             else:
-                pass # Ignoro el paquete
+                pass # Ignoro el paquete, capaz no haga falta xq ya filtramos antes
                 
     else: # Si pasaron 3 segundos y no recibí ningún paquete
-
-        pass # Habría que ver como lo resolvemos (volvemos a enviar el paquete anterior?)
+        contador_de_fallas += 1
+        continue # Habría que ver como lo resolvemos (volvemos a enviar el paquete anterior?)
         
     
-
+print("Fin")
             
    
 

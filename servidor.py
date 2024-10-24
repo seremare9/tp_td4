@@ -2,36 +2,48 @@ from scapy.all import *
 import canalruidoso as f
 from scapy.all import TCP, IP
 
-#interface = "lo0" 
-interface = "Software Loopback Interface 1"
+interface = "lo0" 
+# interface = "Software Loopback Interface 1"
 
 listen_port = 8000  
 
 conectado = True # Cuando quiera terminar la conexión lo seteo en False
 
-def mostrar_flags(pkt): # Función auxiliar que voy a usar para mostrar los paquetes capturados
-    if TCP in pkt:
-        flags = pkt[TCP].flags
-        # Verificar si las flags son SYN+ACK (0x12), ACK (0x10) o FIN+ACK (0x11)
-        if flags & 0x12 == 0x12 or flags & 0x10 == 0x10 or flags & 0x11 == 0x11:
-            pkt.show()
+contador_de_fallas = 0
 
-while conectado:
+while conectado and contador_de_fallas < 3:
 
     print(f"Listening for TCP packets on port {listen_port}...")
     filter_str = f"tcp port {listen_port}"
 
-    pkt_capturado = sniff(iface = interface, prn=mostrar_flags, count=1, timeout=3) 
+    pkt_capturado = sniff(iface = interface, count=1, timeout=10) 
 
     if pkt_capturado: # Si capturó un paquete sin delay
 
         paquete = pkt_capturado[0]
         flag = paquete[TCP].flags
 
+        flags_esperadas = ("S", "A", "FA")
+
+        if not(flag in flags_esperadas):
+            contador_de_fallas += 1
+            continue # Paso a la siguiente iteración
+
+        pkt_capturado.show()
+
         # Checksum
-        if paquete[IP].chksum != paquete[IP].calc_chksum() or paquete[TCP].chksum != paquete[TCP].calc_chksum():
-            # El paquete llego corrupto y hay que retransmitir
-            pass # Esto lo voy a borrar despues
+
+        ip_checksum = paquete[IP].chksum
+        tcp_checksum = paquete[TCP].chksum
+
+        print(f"Checksum IP del paquete con la flag {flag}: {ip_checksum}")
+        print(f"Checksum TCP del paquete con la flag {flag}: {tcp_checksum}")
+
+        if ip_checksum != 0 or tcp_checksum != 0:
+            print(f"El paquete con la flag {flag} está corrupto")
+            # Tengo que retransmitir
+            contador_de_fallas += 1
+            continue
         
         else: # Si el paquete que recibí no está corrupto, mando la respuesta al cliente
     
@@ -57,8 +69,10 @@ while conectado:
                 conectado = False # Termino el while porque voy a cerrar la conexión. 
      
             else:
-                pass
+                pass #capaz no haga falta xq ya filtramos antes
 
     else: # Si pasaron 3 segundos y no recibí ningún paquete
-        pass # Hay que resolverlo
-            
+        contador_de_fallas += 1
+        continue # Hay que resolverlo, de momento paso a la siguiente iteracion
+
+print("Fin")
