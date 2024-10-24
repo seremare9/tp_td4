@@ -37,14 +37,17 @@ while conectado and contador_de_fallas < 3:
         ip_checksum = paquete[IP].chksum
         tcp_checksum = paquete[TCP].chksum
 
-        # Recalculamos el checksum del paquete recibido
-        bytes_paquete = bytes(paquete[TCP])
-        nuevo_paquete = IP(dst=paquete[IP].dst)/TCP(sport=paquete[TCP].sport, dport=paquete[TCP].dport)
-        nuevo_paquete[TCP].load = bytes_paquete
-        nuevo_checksum = nuevo_paquete[TCP].checksum
 
-        print(f"Checksum IP del paquete con la flag {flag}: {ip_checksum}")
+        #print(f"Checksum IP del paquete con la flag {flag}: {ip_checksum}")
         print(f"Checksum TCP del paquete con la flag {flag}: {tcp_checksum}")
+        
+        paquete[TCP].chksum = None
+
+        # Recalculamos el checksum del paquete recibido
+        bytes_tcp = bytes(paquete[TCP])
+
+        print(calc_checksum(bytes_tcp))
+
 
         #if ip_checksum != 0 or tcp_checksum != 0:
             #print(f"El paquete con la flag {flag} está corrupto")
@@ -52,7 +55,7 @@ while conectado and contador_de_fallas < 3:
             #contador_de_fallas += 1
             #continue
 
-        if tcp_checksum != nuevo_checksum:
+        if tcp_checksum != calc_checksum(bytes_tcp):
             print("El paquete está corrupto")
         else: # Si el paquete que recibí no está corrupto, mando la respuesta al cliente
     
