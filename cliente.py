@@ -42,6 +42,8 @@ while conectado: # Acá manejamos todo lo que pasa después de que se envia el S
 
     if pkt_capturado and contador_de_fallas < 3: # Si capturó un paquete sin delay
 
+        print(pkt_capturado)
+
         paquete = pkt_capturado[0]
 
         flag = paquete[TCP].flags

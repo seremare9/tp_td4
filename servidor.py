@@ -29,22 +29,30 @@ while conectado and contador_de_fallas < 3:
             contador_de_fallas += 1
             continue # Paso a la siguiente iteración
 
-        pkt_capturado.show()
+        paquete.show()
 
         # Checksum
 
         ip_checksum = paquete[IP].chksum
         tcp_checksum = paquete[TCP].chksum
 
+        # Recalculamos el checksum del paquete recibido
+        bytes_paquete = bytes(paquete[TCP])
+        nuevo_paquete = IP(dst=paquete[IP].dst)/TCP(sport=paquete[TCP].sport, dport=paquete[TCP].dport)
+        nuevo_paquete[TCP].load = bytes_paquete
+        nuevo_checksum = nuevo_paquete[TCP].checksum
+
         print(f"Checksum IP del paquete con la flag {flag}: {ip_checksum}")
         print(f"Checksum TCP del paquete con la flag {flag}: {tcp_checksum}")
 
-        if ip_checksum != 0 or tcp_checksum != 0:
-            print(f"El paquete con la flag {flag} está corrupto")
+        #if ip_checksum != 0 or tcp_checksum != 0:
+            #print(f"El paquete con la flag {flag} está corrupto")
             # Tengo que retransmitir
-            contador_de_fallas += 1
-            continue
-        
+            #contador_de_fallas += 1
+            #continue
+
+        if tcp_checksum != nuevo_checksum:
+            print("El paquete está corrupto")
         else: # Si el paquete que recibí no está corrupto, mando la respuesta al cliente
     
             if flag == "S":
