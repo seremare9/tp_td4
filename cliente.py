@@ -3,6 +3,7 @@ from scapy.all import *
 from scapy.all import TCP, IP
 import time
 import random
+from funcionesAuxiliares import *
 
 # Elegimos parametros
 source_ip = '127.0.0.1'
