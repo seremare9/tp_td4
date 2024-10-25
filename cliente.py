@@ -18,28 +18,27 @@ num_ack = 0
 
 print(num_seq)
 
+# Armamos el paquete
 ip = IP(dst=dest_ip,src =source_ip)
 tcp = TCP(dport=dest_port, sport =src_port, seq=num_seq, ack=num_ack, flags="S")
 syn_packet = ip/tcp 
 
-ultimo_packet_enviado = "SYN"
+ultimo_packet_enviado = "SYN" # Variable para tener registro de las flags enviadas por el cliente.
 
 f.envio_paquetes_inseguro(syn_packet) # Se envía el paquete que contiene el SYN.
 
 interface = "Software Loopback Interface 1" 
 # interface = "lo0"
 
-listen_port = 5000  
-
 conectado = True 
 
-print(f"Listening for TCP packets on port {listen_port}...")
-filter_str = f"tcp port {listen_port}"
+print(f"Listening for TCP packets on port {src_port}...")
+filter_str = f"tcp port {src_port}"
 
 while conectado: # Acá manejamos todo lo que pasa después de que se envia el SYN
 
-    print(f"Listening for TCP packets on port {listen_port}...")
-    filter_str = f"tcp port {listen_port}"
+    print(f"Listening for TCP packets on port {src_port}...")
+    filter_str = f"tcp port {src_port}"
 
     pkt_capturado = sniff(iface = interface, filter=filter_str, count=1, timeout=10) 
 
@@ -78,6 +77,7 @@ while conectado: # Acá manejamos todo lo que pasa después de que se envia el S
             ack_packet = ip/tcp 
             ultimo_packet_enviado = "ACK"
             f.envio_paquetes_inseguro(ack_packet) # Se envía el paquete que contiene el ACK
+            time.sleep(20) # Espera los 20 segundos que se toma el servidor en mandar el FIN
 
         elif flag == "F":
             ip = IP(dst=dest_ip,src =source_ip)

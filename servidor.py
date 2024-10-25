@@ -75,13 +75,12 @@ while conectado:
             f.envio_paquetes_inseguro(fin_packet)
 
         elif flag == "FA":
-            ip = IP(dst=paquete[IP].src, src=paquete[IP].dst)
-            tcp = TCP(dport=paquete[TCP].sport, sport=listen_port, seq=paquete[TCP].ack, ack=paquete[TCP].seq+1, flags="A")
-            ultimoack_packet = ip/tcp 
-            ultimo_packet_enviado = "ACK"
-            f.envio_paquetes_inseguro(ultimoack_packet)
-
-            conectado = False # Termino el while porque voy a cerrar la conexión.
+            if(ultimo_packet_enviado == "FIN" or ultimo_packet_enviado == "ACK"):
+                ip = IP(dst=paquete[IP].src, src=paquete[IP].dst)
+                tcp = TCP(dport=paquete[TCP].sport, sport=listen_port, seq=paquete[TCP].ack, ack=paquete[TCP].seq+1, flags="A")
+                ultimoack_packet = ip/tcp 
+                ultimo_packet_enviado = "ACK"
+                f.envio_paquetes_inseguro(ultimoack_packet)
      
         else:
             continue 
@@ -97,7 +96,7 @@ while conectado:
             f.envio_paquetes_inseguro(fin_packet)
 
         elif ultimo_packet_enviado == "ACK": # Retransmito el paquete ACK
-            f.envio_paquetes_inseguro(ultimoack_packet)
+            conectado = False # Termino el while porque voy a cerrar la conexión.
 
         else: # Paso a la siguiente iteración
             continue
