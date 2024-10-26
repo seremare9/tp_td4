@@ -55,21 +55,25 @@ while conectado: # Acá manejamos todo lo que pasa después de que se envia el S
         if not(flag in flags_esperadas):
             continue # Paso a la siguiente iteración
 
-        pkt_capturado.show()
+        pkt_capturado[0].show()
 
         # Checksum
-        '''
+        
         # ip_checksum = paquete[IP].chksum
         tcp_checksum = paquete[TCP].chksum
 
         # print(f"Checksum IP del paquete con la flag {flag}: {ip_checksum}")
         print(f"Checksum TCP del paquete con la flag {flag}: {tcp_checksum}")
 
-        if ip_checksum != 0 or tcp_checksum != 0:
+        del paquete[TCP].chksum
+        # paquete = paquete.__class__(bytes(paquete))
+        checksum_calculado = checksum_manual(paquete[TCP])
+        print(checksum_calculado)
+        
+        if tcp_checksum != checksum_calculado:
             print(f"El paquete con la flag {flag} está corrupto")
-            # Tengo que retransmitir
-        else:
-        '''
+            # continue # Tengo que retransmitir 
+        
 
         if flag == "SA": # Si recibe un SYN+ACK, manda un ACK
             ip = IP(dst=dest_ip,src =source_ip)
@@ -105,7 +109,7 @@ while conectado: # Acá manejamos todo lo que pasa después de que se envia el S
             El cliente retransmitirá el FIN ACK varias veces. Si después de un número determinado de retransmisiones 
             aún no recibe el ACK, el cliente terminará cerrando la conexión de manera unilateral, agotando su temporizador.
             '''
-            if retransmisiones_finack < 5:
+            if retransmisiones_finack < 5: # Se asume que el servidor cerró la conexión
                 f.envio_paquetes_inseguro(finack_packet)
                 retransmisiones_finack += 1
             else:

@@ -47,16 +47,9 @@ while conectado:
 
         print(calc_checksum(bytes_tcp))
 
-
-        #if ip_checksum != 0 or tcp_checksum != 0:
-            #print(f"El paquete con la flag {flag} está corrupto")
-            # Tengo que retransmitir
-            #contador_de_fallas += 1
-            #continue
-
         if tcp_checksum != calc_checksum(bytes_tcp):
             print("El paquete está corrupto")
-        else: # Si el paquete que recibí no está corrupto, mando la respuesta al cliente
+            continue # Si el paquete que recibí no está corrupto, mando la respuesta al cliente
         '''
 
         if flag == "S":
