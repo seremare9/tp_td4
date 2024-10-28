@@ -67,12 +67,13 @@ while conectado: # Acá manejamos todo lo que pasa después de que se envia el S
 
         paquete[TCP].chksum = 0
         # paquete = paquete.__class__(bytes(paquete))
-        checksum_calculado = checksum(bytes(paquete)) + 995
+        ph = pseudo_header(paquete[IP].src, paquete[IP].dst, paquete[IP].proto, len(paquete[TCP]))
+        checksum_calculado = checksum(bytes(paquete[TCP]) + ph)
         print(checksum_calculado)
-        
+
         if tcp_checksum != checksum_calculado:
             print(f"El paquete con la flag {flag} está corrupto")
-            # continue # Tengo que retransmitir 
+            continue # Sigue escuchando
         
 
         if flag == "SA": # Si recibe un SYN+ACK, manda un ACK

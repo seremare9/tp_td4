@@ -1,5 +1,7 @@
 # En este archivo vamos a definir todas las funciones auxiliares que utilicemos
 from scapy.all import raw
+from scapy.all import *
+import struct
 
 def checksum_manual(packet):
     data = raw(packet)
@@ -14,7 +16,7 @@ def checksum_manual(packet):
     checksum = ~total_sum & 0xFFFF
     return checksum
 
-'''
+
 def pseudo_header(ip_src, ip_dst, ip_proto, length):
     """
     Return a pseudo header according to RFC768
@@ -22,6 +24,7 @@ def pseudo_header(ip_src, ip_dst, ip_proto, length):
     # Prepare the binary representation of the pseudo header
     return struct.pack("!4s4sHH", inet_aton(ip_src), inet_aton(ip_dst), ip_proto, length)
 
+'''
 def checksum_manual(paquete):
 
     # Set the UDP checksum to 0 and compute the checksum 'manually'

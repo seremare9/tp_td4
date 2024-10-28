@@ -32,25 +32,21 @@ while conectado:
         paquete.show()
 
         # Checksum
-        '''
 
-        # ip_checksum = paquete[IP].chksum
         tcp_checksum = paquete[TCP].chksum
 
-        #print(f"Checksum IP del paquete con la flag {flag}: {ip_checksum}")
+        # print(f"Checksum IP del paquete con la flag {flag}: {ip_checksum}")
         print(f"Checksum TCP del paquete con la flag {flag}: {tcp_checksum}")
-        
-        paquete[TCP].chksum = None
 
-        # Recalculamos el checksum del paquete recibido
-        bytes_tcp = bytes(paquete[TCP])
+        paquete[TCP].chksum = 0
+        # paquete = paquete.__class__(bytes(paquete))
+        ph = pseudo_header(paquete[IP].src, paquete[IP].dst, paquete[IP].proto, len(paquete[TCP]))
+        checksum_calculado = checksum(bytes(paquete[TCP]) + ph)
+        print(checksum_calculado)
 
-        print(calc_checksum(bytes_tcp))
-
-        if tcp_checksum != calc_checksum(bytes_tcp):
-            print("El paquete está corrupto")
-            continue # Si el paquete que recibí no está corrupto, mando la respuesta al cliente
-        '''
+        if tcp_checksum != checksum_calculado:
+            print(f"El paquete con la flag {flag} está corrupto")
+            continue # Sigue escuchando
 
         if flag == "S":
             ip = IP(dst=paquete[IP].src, src=paquete[IP].dst)
