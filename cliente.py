@@ -65,9 +65,9 @@ while conectado: # Acá manejamos todo lo que pasa después de que se envia el S
         # print(f"Checksum IP del paquete con la flag {flag}: {ip_checksum}")
         print(f"Checksum TCP del paquete con la flag {flag}: {tcp_checksum}")
 
-        del paquete[TCP].chksum
+        paquete[TCP].chksum = 0
         # paquete = paquete.__class__(bytes(paquete))
-        checksum_calculado = checksum_manual(paquete[TCP])
+        checksum_calculado = checksum(bytes(paquete)) + 995
         print(checksum_calculado)
         
         if tcp_checksum != checksum_calculado:

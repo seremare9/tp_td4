@@ -13,3 +13,22 @@ def checksum_manual(packet):
     # Tomar el complemento de 16 bits
     checksum = ~total_sum & 0xFFFF
     return checksum
+
+'''
+def pseudo_header(ip_src, ip_dst, ip_proto, length):
+    """
+    Return a pseudo header according to RFC768
+    """
+    # Prepare the binary representation of the pseudo header
+    return struct.pack("!4s4sHH", inet_aton(ip_src), inet_aton(ip_dst), ip_proto, length)
+
+def checksum_manual(paquete):
+
+    # Set the UDP checksum to 0 and compute the checksum 'manually'
+    #packet = IP(dst=paquete[IP].dst, src=paquete[IP].src)
+    packet_raw = bytes(paquete)
+    tcp_raw = packet_raw[20:]
+    ph = pseudo_header(paquete.src, paquete.dst, paquete[IP].proto, len(tcp_raw))
+
+    return checksum(ph + tcp_raw)
+'''
