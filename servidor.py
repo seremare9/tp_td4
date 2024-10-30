@@ -17,7 +17,7 @@ while conectado:
     print(f"Listening for TCP packets on port {listen_port}...")
     filter_str = f"tcp port {listen_port}"
 
-    pkt_capturado = sniff(iface = interface, filter=filter_str, count=1, timeout=10) 
+    pkt_capturado = sniff(iface = interface, filter=filter_str, count=1, timeout=3) 
 
     if pkt_capturado: # Si capturó un paquete sin delay
 
@@ -84,7 +84,7 @@ while conectado:
         elif ultimo_packet_enviado == "FIN": # Retransmito el paquete FIN
             f.envio_paquetes_inseguro(fin_packet)
 
-        elif ultimo_packet_enviado == "ACK": # Retransmito el paquete ACK
+        elif ultimo_packet_enviado == "ACK":
             conectado = False # Termino el while porque voy a cerrar la conexión.
 
         else: # Paso a la siguiente iteración

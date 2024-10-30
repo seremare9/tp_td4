@@ -40,7 +40,7 @@ while conectado: # Acá manejamos todo lo que pasa después de que se envia el S
     print(f"Listening for TCP packets on port {src_port}...")
     filter_str = f"tcp port {src_port}"
 
-    pkt_capturado = sniff(iface = interface, filter=filter_str, count=1, timeout=10) 
+    pkt_capturado = sniff(iface = interface, filter=filter_str, count=1, timeout=3) 
 
     if pkt_capturado: # Si capturó un paquete sin delay
 
@@ -66,7 +66,6 @@ while conectado: # Acá manejamos todo lo que pasa después de que se envia el S
         print(f"Checksum TCP del paquete con la flag {flag}: {tcp_checksum}")
 
         paquete[TCP].chksum = 0
-        # paquete = paquete.__class__(bytes(paquete))
         ph = pseudo_header(paquete[IP].src, paquete[IP].dst, paquete[IP].proto, len(paquete[TCP]))
         checksum_calculado = checksum(bytes(paquete[TCP]) + ph)
         print(checksum_calculado)
@@ -122,25 +121,3 @@ while conectado: # Acá manejamos todo lo que pasa después de que se envia el S
         
     
 print("Fin de la conexión")
-            
-   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
