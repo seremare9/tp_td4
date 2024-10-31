@@ -1,6 +1,7 @@
-from scapy.all import *
-import canalruidoso as f
+import canalruidoso as f 
+from scapy.all import * 
 from scapy.all import TCP, IP
+import time
 from funcionesAuxiliares import *
 
 # interface = "lo0" 
