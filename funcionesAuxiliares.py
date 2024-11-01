@@ -23,3 +23,15 @@ def pseudo_header(ip_src, ip_dst, ip_proto, length):
     """
     # Prepare the binary representation of the pseudo header
     return struct.pack("!4s4sHH", inet_aton(ip_src), inet_aton(ip_dst), ip_proto, length)
+
+def check_sum(paquete) -> bool:
+    # Guardamos el valor del header en una variable
+    tcp_checksum = paquete[TCP].chksum
+    # Seteamos el valor del header en cero para recalcularlo
+    paquete[TCP].chksum = 0
+    # Creamos un pseudo header
+    ph = pseudo_header(paquete[IP].src, paquete[IP].dst, paquete[IP].proto, len(paquete[TCP]))
+    # Calculamos el checksum del contenido del paquete con el pseudo header
+    checksum_calculado = checksum(bytes(paquete[TCP]) + ph)
+
+    return tcp_checksum == checksum_calculado
