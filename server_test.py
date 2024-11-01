@@ -3,8 +3,10 @@ import canalruidoso as f
 from scapy.all import TCP, IP
 from checksum import *
 import time
+from client_test import test_cliente
+from multiprocessing import Process
 
-def test_servidor():
+def test_servidor() -> List:
 
     # interface = "lo0" 
     interface = "Software Loopback Interface 1"
@@ -31,7 +33,7 @@ def test_servidor():
 
         cuenta += 1
         
-        pkt_capturado = sniff(iface = interface, filter=filter_str, count=1, timeout=10) 
+        pkt_capturado = sniff(iface = interface, filter=filter_str, count=1, timeout=8) 
 
         if pkt_capturado: # Si capturó un paquete sin delay
 
@@ -62,12 +64,13 @@ def test_servidor():
                 cant_corruptos += 1
                 continue # Sigue escuchando
 
-        if cuenta >= 15:
+        if cuenta >= 12:
             conectado = False
 
     print("Fin de la conexión")
 
-    print(tiempos_entrega)
+    paquetes_recibidos = len(tiempos_entrega)
+    paquetes_perdidos = 10 - paquetes_recibidos
 
     i = 0
     while i < len(tiempos_entrega):
@@ -77,18 +80,33 @@ def test_servidor():
         else:
             i += 1
 
-    # print(tiempos_entrega)
-
     paquetes_con_delay = len(tiempos_entrega)
 
-    # print(cant_corruptos)
-    # print(paquetes_sin_delay)
-    # print(paquetes_con_delay)
+    delay_promedio = 0
+    for tiempo in tiempos_entrega:
+        delay_promedio = delay_promedio + tiempo
+    delay_promedio = delay_promedio/len(tiempos_entrega)
 
-    info = {"tiempos_entrega": tiempos_entrega, "corruptos": cant_corruptos, "delayed": paquetes_con_delay, "not_delayed": paquetes_sin_delay}
+    valores_relevantes = []
+    valores_relevantes.append(paquetes_recibidos)
+    valores_relevantes.append(paquetes_perdidos)
+    valores_relevantes.append(paquetes_sin_delay)
+    valores_relevantes.append(paquetes_con_delay) 
+    valores_relevantes.append(delay_promedio)   
+    valores_relevantes.append(cant_corruptos)
+    print (valores_relevantes)
+    return valores_relevantes
 
-    return info
+    # info = {"tiempos_entrega": tiempos_entrega, "corruptos": cant_corruptos, "delayed": paquetes_con_delay, "not_delayed": paquetes_sin_delay}
 
+    # return info
+
+if __name__ == '__main__':
+
+    p1 = Process(target=test_servidor)
+    p2 = Process(target=test_cliente)
+    p1.start()
+    p2.start()
 
 
 
