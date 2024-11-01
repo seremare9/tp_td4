@@ -77,13 +77,19 @@ def test_servidor():
         else:
             i += 1
 
-    print(tiempos_entrega)
+    # print(tiempos_entrega)
 
     paquetes_con_delay = len(tiempos_entrega)
 
-    print(cant_corruptos)
-    print(paquetes_sin_delay)
-    print(paquetes_con_delay)
-    return
+    # print(cant_corruptos)
+    # print(paquetes_sin_delay)
+    # print(paquetes_con_delay)
+
+    info = {"tiempos_entrega": tiempos_entrega, "corruptos": cant_corruptos, "delayed": paquetes_con_delay, "not_delayed": paquetes_sin_delay}
+
+    return info
+
+
+
 
 
