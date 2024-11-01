@@ -2,7 +2,7 @@ import canalruidoso as f
 from scapy.all import * 
 from scapy.all import TCP, IP
 import time
-from funcionesAuxiliares import *
+from checksum import *
 
 global listen_port
 listen_port = 8000  

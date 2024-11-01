@@ -3,7 +3,7 @@ from scapy.all import *
 from scapy.all import TCP, IP
 import time
 import random
-from funcionesAuxiliares import *
+from checksum import *
 
 # Elegimos parametros
 global source_ip

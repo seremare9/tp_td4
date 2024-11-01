@@ -1,8 +1,10 @@
 # En este archivo vamos a definir todas las funciones auxiliares que utilicemos
 from scapy.all import raw
 from scapy.all import *
+from scapy.all import TCP, IP 
 import struct
 
+'''
 def checksum_manual(packet):
     data = raw(packet)
     # Convertir en palabras de 16 bits y sumar
@@ -16,6 +18,7 @@ def checksum_manual(packet):
     checksum = ~total_sum & 0xFFFF
     return checksum
 
+'''
 
 def pseudo_header(ip_src, ip_dst, ip_proto, length):
     """
