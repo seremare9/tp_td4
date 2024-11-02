@@ -4,7 +4,7 @@ from scapy.all import TCP, IP
 from checksum import *
 import time
 from client_test import test_cliente
-from multiprocessing import Process, Queue
+from multiprocessing import Process
 
 def test_servidor(cant_paquetes) -> List:
 
@@ -105,8 +105,8 @@ def test_servidor(cant_paquetes) -> List:
 
 
 if __name__ == '__main__':
-    p1 = Process(target=test_servidor, args=(100,))
-    p2 = Process(target=test_cliente, args=(100,))
+    p1 = Process(target=test_servidor, args=(175,))
+    p2 = Process(target=test_cliente, args=(175,))
     p1.start()
     p2.start()
 
