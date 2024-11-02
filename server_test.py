@@ -5,7 +5,6 @@ from checksum import *
 import time
 from client_test import test_cliente
 from multiprocessing import Process, Queue
-import matplotlib.pyplot as plt
 
 def test_servidor(cant_paquetes) -> List:
 
@@ -81,7 +80,7 @@ def test_servidor(cant_paquetes) -> List:
         else:
             i += 1
 
-    paquetes_con_delay = len(tiempos_entrega) / cant_paquetes # % de paquetes con delay
+    paquetes_con_delay = len(tiempos_entrega)
 
     delay_promedio = 0
     if len(tiempos_entrega) != 0:
@@ -96,7 +95,14 @@ def test_servidor(cant_paquetes) -> List:
     valores_relevantes.append(paquetes_con_delay) 
     valores_relevantes.append(delay_promedio)   
     valores_relevantes.append(cant_corruptos)
-    print (valores_relevantes)
+    # print (valores_relevantes)
+
+    print(f"Cantidad de paquetes enviados: {cant_paquetes} ")
+    print(f"Cantidad de paquetes recibidos: {paquetes_recibidos}")
+    print(f"Cantidad de paquetes perdidos: {paquetes_perdidos}")
+    print(f"Cantidad de paquetes sin delay: {paquetes_sin_delay} ")
+    print(f"Cantidad de paquetes con delay: {paquetes_con_delay} ")
+    print(f"Cantidad de paquetes corruptos: {cant_corruptos} ")
 
     return valores_relevantes
 
