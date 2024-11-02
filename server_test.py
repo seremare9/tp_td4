@@ -5,8 +5,9 @@ from checksum import *
 import time
 from client_test import test_cliente
 from multiprocessing import Process
+import matplotlib.pyplot as plt
 
-def test_servidor() -> List:
+def test_servidor(cant_paquetes) -> List:
 
     # interface = "lo0" 
     interface = "Software Loopback Interface 1"
@@ -64,13 +65,13 @@ def test_servidor() -> List:
                 cant_corruptos += 1
                 continue # Sigue escuchando
 
-        if cuenta >= 12:
+        if cuenta >= cant_paquetes + 2:
             conectado = False
 
     print("Fin de la conexión")
 
     paquetes_recibidos = len(tiempos_entrega)
-    paquetes_perdidos = 10 - paquetes_recibidos
+    paquetes_perdidos = cant_paquetes - paquetes_recibidos
 
     i = 0
     while i < len(tiempos_entrega):
@@ -80,7 +81,7 @@ def test_servidor() -> List:
         else:
             i += 1
 
-    paquetes_con_delay = len(tiempos_entrega)
+    paquetes_con_delay = len(tiempos_entrega) / cant_paquetes # % de paquetes con delay
 
     delay_promedio = 0
     for tiempo in tiempos_entrega:
@@ -95,18 +96,31 @@ def test_servidor() -> List:
     valores_relevantes.append(delay_promedio)   
     valores_relevantes.append(cant_corruptos)
     print (valores_relevantes)
+
     return valores_relevantes
 
-    # info = {"tiempos_entrega": tiempos_entrega, "corruptos": cant_corruptos, "delayed": paquetes_con_delay, "not_delayed": paquetes_sin_delay}
+def grafico_delay():
+    if __name__ == '__main__':
+        aux = 1
+        eje_x = []
+        eje_y = []
+        while aux < 5:
+            p1 = Process(target=test_servidor(aux))
+            p2 = Process(target=test_cliente(aux))
+            p1.start()
+            p2.start()
+            eje_x.append(aux)
+            eje_y.append(p1[3])
+            aux += 1
+    
+    plt.bar(eje_x, eje_y)
+    plt.title('Porcentaje de paquetes que llegan con delay')
+    plt.xlabel('Cantidad de paquetes recibidos')
+    plt.ylabel('Porcentaje de paquetes que llegaron con delay')
+    plt.show()
+    return
 
-    # return info
 
-if __name__ == '__main__':
-
-    p1 = Process(target=test_servidor)
-    p2 = Process(target=test_cliente)
-    p1.start()
-    p2.start()
 
 
 
