@@ -4,7 +4,7 @@ from scapy.all import TCP, IP
 from checksum import *
 import time
 from client_test import test_cliente
-from multiprocessing import Process
+from multiprocessing import Process, Queue
 import matplotlib.pyplot as plt
 
 def test_servidor(cant_paquetes) -> List:
@@ -84,9 +84,10 @@ def test_servidor(cant_paquetes) -> List:
     paquetes_con_delay = len(tiempos_entrega) / cant_paquetes # % de paquetes con delay
 
     delay_promedio = 0
-    for tiempo in tiempos_entrega:
-        delay_promedio = delay_promedio + tiempo
-    delay_promedio = delay_promedio/len(tiempos_entrega)
+    if len(tiempos_entrega) != 0:
+        for tiempo in tiempos_entrega:
+            delay_promedio = delay_promedio + tiempo
+        delay_promedio = delay_promedio/len(tiempos_entrega)
 
     valores_relevantes = []
     valores_relevantes.append(paquetes_recibidos)
@@ -100,18 +101,18 @@ def test_servidor(cant_paquetes) -> List:
     return valores_relevantes
 
 def grafico_delay():
-    if __name__ == '__main__':
-        aux = 1
-        eje_x = []
-        eje_y = []
-        while aux < 5:
-            p1 = Process(target=test_servidor(aux))
-            p2 = Process(target=test_cliente(aux))
-            p1.start()
-            p2.start()
-            eje_x.append(aux)
-            eje_y.append(p1[3])
-            aux += 1
+
+    aux = 1
+    eje_x = []
+    eje_y = []
+    
+
+    p1 = Process(target=test_servidor)
+    p2 = Process(target=test_cliente)
+    p1.start()
+    p2.start()
+    eje_x.append(aux)
+    eje_y.append(p1[3])
     
     plt.bar(eje_x, eje_y)
     plt.title('Porcentaje de paquetes que llegan con delay')
@@ -120,8 +121,45 @@ def grafico_delay():
     plt.show()
     return
 
+def worker(aux, queue):
+    # Simula un trabajo y devuelve un resultado
+    result = test_servidor(aux)
+    queue.put(result)  # Guarda el resultado en la cola
 
+if __name__ == '__main__':
+    aux = 3
+    eje_x = []
+    eje_y = []
+    while aux < 6:
+        # Crea una cola para comunicarse entre procesos
+        queue = Queue()
 
+        # Crea un proceso
+        p1 = Process(target=worker, args=(aux, queue,))
+        p2 = Process(target=test_cliente, args=(aux,))
+        
+        # Inicia el proceso
+        p1.start()
+        p2.start()
+        
+        # Espera a que termine
+        p1.join()
+        p2.join
+        
+        # Obtiene el resultado de la cola
+        result = queue.get()
+
+        print(result)
+
+        eje_x.append(aux)
+        eje_y.append(result[3])
+        aux += 1
+        
+    plt.bar(eje_x, eje_y)
+    plt.title('Porcentaje de paquetes que llegan con delay')
+    plt.xlabel('Cantidad de paquetes recibidos')
+    plt.ylabel('Porcentaje de paquetes que llegaron con delay')
+    plt.show()
 
 
 
