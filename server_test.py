@@ -130,36 +130,44 @@ if __name__ == '__main__':
     aux = 3
     eje_x = []
     eje_y = []
-    while aux < 6:
-        # Crea una cola para comunicarse entre procesos
-        queue = Queue()
+    i = 0
+    while i < 6:
+        while aux < 6:
+            # Crea una cola para comunicarse entre procesos
+            queue = Queue()
 
-        # Crea un proceso
-        p1 = Process(target=worker, args=(aux, queue,))
-        p2 = Process(target=test_cliente, args=(aux,))
-        
-        # Inicia el proceso
-        p1.start()
-        p2.start()
-        
-        # Espera a que termine
-        p1.join()
-        p2.join
-        
-        # Obtiene el resultado de la cola
-        result = queue.get()
+            # Crea un proceso
+            p1 = Process(target=worker, args=(aux, queue,))
+            p2 = Process(target=test_cliente, args=(aux,))
+            
+            # Inicia el proceso
+            p1.start()
+            p2.start()
+            
+            # Espera a que termine
+            p1.join()
+            p2.join
+            
+            # Obtiene el resultado de la cola
+            result = queue.get()
 
-        print(result)
+            print(result)
 
-        eje_x.append(aux)
-        eje_y.append(result[3])
-        aux += 1
+            eje_x.append(aux)
+            eje_y.append(result[i])
+            aux += 1
+
+        plt.bar(eje_x, eje_y)
+        plt.title('Porcentaje de paquetes que llegan con delay')
+        plt.xlabel('Cantidad de paquetes recibidos')
+        plt.ylabel('Porcentaje de paquetes que llegaron con delay')
+        plt.show()
+        i += 1
         
-    plt.bar(eje_x, eje_y)
-    plt.title('Porcentaje de paquetes que llegan con delay')
-    plt.xlabel('Cantidad de paquetes recibidos')
-    plt.ylabel('Porcentaje de paquetes que llegaron con delay')
-    plt.show()
+    
+
+        
+  
 
 
 
