@@ -71,6 +71,8 @@ def test_servidor(cant_paquetes) -> List:
 
     paquetes_recibidos = len(tiempos_entrega)
     paquetes_perdidos = cant_paquetes - paquetes_recibidos
+    
+    paquete_mas_rapido = min(tiempos_entrega)
 
     i = 0
     while i < len(tiempos_entrega):
@@ -88,26 +90,25 @@ def test_servidor(cant_paquetes) -> List:
             delay_promedio = delay_promedio + tiempo
         delay_promedio = delay_promedio/len(tiempos_entrega)
 
-    valores_relevantes = []
-    valores_relevantes.append(paquetes_recibidos)
-    valores_relevantes.append(paquetes_perdidos)
-    valores_relevantes.append(paquetes_sin_delay)
-    valores_relevantes.append(paquetes_con_delay) 
-    valores_relevantes.append(delay_promedio)   
-    valores_relevantes.append(cant_corruptos)
-    # print (valores_relevantes)
+    paquete_mas_lento = max(tiempos_entrega)
+    
 
     print(f"Cantidad de paquetes enviados: {cant_paquetes} ")
     print(f"Cantidad de paquetes recibidos: {paquetes_recibidos}")
     print(f"Cantidad de paquetes perdidos: {paquetes_perdidos}")
     print(f"Cantidad de paquetes sin delay: {paquetes_sin_delay} ")
     print(f"Cantidad de paquetes con delay: {paquetes_con_delay} ")
+    print(f"Menor delay: {paquete_mas_rapido}")
+    print(f"Mayor delay: {paquete_mas_lento}")
+    print(f"Delay promedio: {delay_promedio}")
     print(f"Cantidad de paquetes corruptos: {cant_corruptos} ")
 
-    return valores_relevantes
 
-        
-  
+if __name__ == '__main__':
+    p1 = Process(target=test_servidor, args=(100,))
+    p2 = Process(target=test_cliente, args=(100,))
+    p1.start()
+    p2.start()
 
 
 
