@@ -9,7 +9,7 @@ eje_y_perdidos = [0.12, 0.16, 0.09333, 0.09, 0.104, 0.07333, 0.0571, 0.105] # Pr
 # Crear el gráfico
 plt.bar(eje_x_perdidos, eje_y_perdidos, color='red', width=15)
 
-plt.title('Porcentaje de packet loss')
+plt.title('Proporción de packet loss')
 plt.xlabel('Cant. de paquetes enviados')
 plt.ylabel('Proporción de paquetes que se pierden')
 
@@ -78,7 +78,7 @@ plt.show()
 # Grafico 4: Paquetes corruptos
 
 eje_x_corrupto = [25, 50, 75, 100, 125, 150, 175, 200] # Paquetes enviados
-eje_y_corrupto = [0.16, 0.08, 0.11, 0.07333, 0.0892, 0.1223, 0.09, 0.0837] # Proporciones de paquetes corruptos (valores calculados a mano)
+eje_y_corrupto = [0.18, 0.095, 0.16, 0.1208, 0.0892, 0.1223, 0.09, 0.0837] # Proporciones de paquetes corruptos (valores calculados a mano)
 
 # Crear el gráfico
 plt.bar(eje_x_corrupto, eje_y_corrupto, color='green', width=15)
@@ -102,7 +102,7 @@ plt.show()
 # Gráfico 5: Paquetes con delay
 
 eje_x_peor = [25, 50, 75, 100, 125, 150, 175, 200] # Paquetes enviados
-eje_y_peor = [0.045, 0.0714, 0.147, 0.0879, 0.1517, 0.1223, 0.18, 0.14] # Proporciones de paquetes que llegaron con delay (valores calculados a mano)
+eje_y_peor = [0.045, 0.0714, 0.147, 0.0879, 0.1517, 0.1223, 0.18, 0.156] # Proporciones de paquetes que llegaron con delay (valores calculados a mano)
 
 # Crear el gráfico
 plt.scatter(eje_x_peor, eje_y_peor, color='orange', s=40)
