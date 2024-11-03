@@ -4,22 +4,20 @@ import os
 # Grafico 1: Paquetes perdidos
 
 eje_x_perdidos = [25, 50, 75, 100, 125, 150, 175, 200] # Paquetes enviados
-eje_y_perdidos = [0.12, 0.16, 0.09333, 0.09, 0.104, 0.07333, 0.0571, 0.105] # % que se perdieron
+eje_y_perdidos = [0.12, 0.16, 0.09333, 0.09, 0.104, 0.07333, 0.0571, 0.105] # Proporciones de paquetes que se perdieron (valores calculados a mano)
 
 # Crear el gráfico
 plt.bar(eje_x_perdidos, eje_y_perdidos, color='red', width=15)
 
-# Añadir título y etiquetas
 plt.title('Porcentaje de packet loss')
 plt.xlabel('Cant. de paquetes enviados')
-plt.ylabel('Porcentaje de paquetes que se pierden')
+plt.ylabel('Proporción de paquetes que se pierden')
 
 plt.xticks(eje_x_perdidos)
 
-# Añadir cuadrícula
 plt.grid(axis='y')
 
-# # Guardar gráfico
+# Guardar gráfico
 ruta_grafico = os.path.join('../Gráficos', 'perdidos.png')
 plt.savefig(ruta_grafico)
 
@@ -30,12 +28,11 @@ plt.show()
 # Grafico 2: Delay
 
 eje_x_delay = [25, 50, 75, 100, 125, 150, 175, 200] # Paquetes enviados
-eje_y_delay = [5.015794992446899, 5.016626358032227, 5.013575768470764, 5.014672607183456, 5.014866267933565, 5.013048073824714, 5.0172685543696085, 5.017916287694659]
+eje_y_delay = [5.015794992446899, 5.016626358032227, 5.013575768470764, 5.014672607183456, 5.014866267933565, 5.013048073824714, 5.0172685543696085, 5.017916287694659] # Delay promedio en cada caso
 
 # Crear el gráfico
 plt.plot(eje_x_delay, eje_y_delay, color='purple')
 
-# Añadir título y etiquetas
 plt.title('Delay promedio')
 plt.xlabel('Cant. de paquetes enviados')
 plt.ylabel('Delay promedio de paquetes retrasados')
@@ -43,10 +40,9 @@ plt.ylabel('Delay promedio de paquetes retrasados')
 plt.xticks(eje_x_delay)
 plt.ylim(5.0, 5.03)
 
-# Añadir cuadrícula
 plt.grid(True)
 
-# # Guardar gráfico
+# Guardar gráfico
 ruta_grafico = os.path.join('../Gráficos', 'delay.png')
 plt.savefig(ruta_grafico)
 
@@ -57,12 +53,11 @@ plt.show()
 # Grafico 3: Peor caso
 
 eje_x_peor = [25, 50, 75, 100, 125, 150, 175, 200] # Paquetes enviados
-eje_y_peor = [5.015794992446899, 5.025397300720215, 5.022305965423584, 5.021087884902954, 5.028006076812744, 5.02164888381958, 5.0934436321258545, 5.195056200027466]
+eje_y_peor = [5.015794992446899, 5.025397300720215, 5.022305965423584, 5.021087884902954, 5.028006076812744, 5.02164888381958, 5.0934436321258545, 5.195056200027466] # Delay del paquete que más tardó en llegar en cada caso
 
 # Crear el gráfico
 plt.scatter(eje_x_peor, eje_y_peor, color='blue', s=40)
 
-# Añadir título y etiquetas
 plt.title('Delay en el peor caso')
 plt.xlabel('Cant. de paquetes enviados')
 plt.ylabel('Tiempo del paquete que más tardó en llegar')
@@ -70,10 +65,9 @@ plt.ylabel('Tiempo del paquete que más tardó en llegar')
 plt.xticks(eje_x_peor)
 plt.ylim(4, 6)
 
-# Añadir cuadrícula
 plt.grid(True)
 
-# # Guardar gráfico
+# Guardar gráfico
 ruta_grafico = os.path.join('../Gráficos', 'peor.png')
 plt.savefig(ruta_grafico)
 
@@ -84,22 +78,20 @@ plt.show()
 # Grafico 4: Paquetes corruptos
 
 eje_x_corrupto = [25, 50, 75, 100, 125, 150, 175, 200] # Paquetes enviados
-eje_y_corrupto = [0.16, 0.08, 0.11, 0.07333, 0.0892, 0.1223, 0.09, 0.0837] # % que se perdieron
+eje_y_corrupto = [0.16, 0.08, 0.11, 0.07333, 0.0892, 0.1223, 0.09, 0.0837] # Proporciones de paquetes corruptos (valores calculados a mano)
 
 # Crear el gráfico
 plt.bar(eje_x_corrupto, eje_y_corrupto, color='green', width=15)
 
-# Añadir título y etiquetas
 plt.title('Corrupción de paquetes')
 plt.xlabel('Cant. de paquetes enviados')
-plt.ylabel('Cantidad de paquetes corruptos que llegaron')
+plt.ylabel('Proporción de paquetes corruptos que llegaron')
 
 plt.xticks(eje_x_corrupto)
 
-# Añadir cuadrícula
 plt.grid(axis='y')
 
-# # Guardar gráfico
+# Guardar gráfico
 ruta_grafico = os.path.join('../Gráficos', 'corrupcion.png')
 plt.savefig(ruta_grafico)
 
@@ -110,23 +102,21 @@ plt.show()
 # Gráfico 5: Paquetes con delay
 
 eje_x_peor = [25, 50, 75, 100, 125, 150, 175, 200] # Paquetes enviados
-eje_y_peor = [0.045, 0.0714, 0.147, 0.0879, 0.1517, 0.1223, 0.18, 0.14]
+eje_y_peor = [0.045, 0.0714, 0.147, 0.0879, 0.1517, 0.1223, 0.18, 0.14] # Proporciones de paquetes que llegaron con delay (valores calculados a mano)
 
 # Crear el gráfico
 plt.scatter(eje_x_peor, eje_y_peor, color='orange', s=40)
 
-# Añadir título y etiquetas
 plt.title('Paquetes con delay')
 plt.xlabel('Cant. de paquetes enviados')
-plt.ylabel('Porcentaje de paquetes que llegan con delay')
+plt.ylabel('Proporción de paquetes que llegan con delay')
 
 plt.xticks(eje_x_peor)
 
-# Añadir cuadrícula
 plt.grid(True)
 
-# # Guardar gráfico
-ruta_grafico = os.path.join('../Gráficos', 'porcentaje_delay.png')
+# Guardar gráfico
+ruta_grafico = os.path.join('../Gráficos', 'proporcion_delay.png')
 plt.savefig(ruta_grafico)
 
 # Mostrar el gráfico
@@ -134,6 +124,8 @@ plt.show()
 
 
 '''
+Resultado de los tests:
+
 25 paquetes
 Cantidad de paquetes enviados: 25
 Cantidad de paquetes recibidos: 22
@@ -221,40 +213,4 @@ Menor delay: 1.0026180744171143
 Mayor delay: 5.195056200027466
 Delay promedio: 5.017916287694659
 Cantidad de paquetes corruptos: 15
-'''
-
-
-
-'''
-25 paquetes
-Cantidad de paquetes enviados: 25
-Cantidad de paquetes recibidos: 22
-Cantidad de paquetes perdidos: 3
-Cantidad de paquetes sin delay: 15
-Cantidad de paquetes con delay: 7
-Cantidad de paquetes corruptos: 1
-
-50 paquetes
-Cantidad de paquetes enviados: 50
-Cantidad de paquetes recibidos: 44
-Cantidad de paquetes perdidos: 6
-Cantidad de paquetes sin delay: 34
-Cantidad de paquetes con delay: 10
-Cantidad de paquetes corruptos: 14
-
-75 paquetes
-Cantidad de paquetes enviados: 75
-Cantidad de paquetes recibidos: 59
-Cantidad de paquetes perdidos: 16
-Cantidad de paquetes sin delay: 51
-Cantidad de paquetes con delay: 8
-Cantidad de paquetes corruptos: 9
-
-100 paquetes
-Cantidad de paquetes enviados: 100
-Cantidad de paquetes recibidos: 97
-Cantidad de paquetes perdidos: 3
-Cantidad de paquetes sin delay: 84
-Cantidad de paquetes con delay: 13
-Cantidad de paquetes corruptos: 11
 '''

@@ -8,7 +8,6 @@ from multiprocessing import Process
 
 def test_servidor(cant_paquetes) -> List:
 
-    # interface = "lo0" 
     interface = "Software Loopback Interface 1"
 
     listen_port = 8000  
@@ -40,9 +39,9 @@ def test_servidor(cant_paquetes) -> List:
             end = time.time() # Se guarda el tiempo en el que llegó el paquete
             tiempos_entrega.append(end-start) # Se guarda el tiempo que tardó en llegar el paquete en la lista
 
-            # paquetes_sin_delay += 1
-
             paquete = pkt_capturado[0]
+
+            # Se fija que las flags del paquete sean las correspondientes al handshake y/o al cierre
             flag = paquete[TCP].flags
 
             flags_esperadas = ("S", "A", "FA")
@@ -51,12 +50,11 @@ def test_servidor(cant_paquetes) -> List:
                 continue 
 
             # Checksum
-
             tcp_checksum = paquete[TCP].chksum
 
             paquete[TCP].chksum = 0
-            ph = pseudo_header(paquete[IP].src, paquete[IP].dst, paquete[IP].proto, len(paquete[TCP]))
-            checksum_calculado = checksum(bytes(paquete[TCP]) + ph)
+            ph = pseudo_header(paquete[IP].src, paquete[IP].dst, paquete[IP].proto, len(paquete[TCP])) # Arma un pseudo header con los datos del paquete
+            checksum_calculado = checksum(bytes(paquete[TCP]) + ph) # Recalcula el checksum usando el pseudo header y los bytes del paquete TCP
             print(checksum_calculado)
             print(tcp_checksum)
 
@@ -74,6 +72,7 @@ def test_servidor(cant_paquetes) -> List:
     
     paquete_mas_rapido = min(tiempos_entrega)
 
+    # Se remueven los tiempos de entrega de los paquetes que no tuvieron delay de la lista
     i = 0
     while i < len(tiempos_entrega):
         if tiempos_entrega[i] < 3:
@@ -84,6 +83,7 @@ def test_servidor(cant_paquetes) -> List:
 
     paquetes_con_delay = len(tiempos_entrega)
 
+    # Se calcula el delay promedio con los valores que quedan en la lista
     delay_promedio = 0
     if len(tiempos_entrega) != 0:
         for tiempo in tiempos_entrega:
@@ -92,7 +92,7 @@ def test_servidor(cant_paquetes) -> List:
 
     paquete_mas_lento = max(tiempos_entrega)
     
-
+    # Se imprimen todos los valores que consideramos relevantes para la experimentación
     print(f"Cantidad de paquetes enviados: {cant_paquetes} ")
     print(f"Cantidad de paquetes recibidos: {paquetes_recibidos}")
     print(f"Cantidad de paquetes perdidos: {paquetes_perdidos}")
@@ -104,11 +104,9 @@ def test_servidor(cant_paquetes) -> List:
     print(f"Cantidad de paquetes corruptos: {cant_corruptos} ")
 
 
+# Se ejecutan el test del cliente y el servidor en simultáneo
 if __name__ == '__main__':
-    p1 = Process(target=test_servidor, args=(175,))
-    p2 = Process(target=test_cliente, args=(175,))
+    p1 = Process(target=test_servidor, args=(25,)) # El valor del argumento se cambia a mano para la experimentación con cada cantidad de paquetes
+    p2 = Process(target=test_cliente, args=(25,)) # El valor del argumento se cambia a mano para la experimentación con cada cantidad de paquetes
     p1.start()
     p2.start()
-
-
-
