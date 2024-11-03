@@ -106,6 +106,33 @@ plt.savefig(ruta_grafico)
 # Mostrar el gráfico
 plt.show()
 
+
+# Gráfico 5: Paquetes con delay
+
+eje_x_peor = [25, 50, 75, 100, 125, 150, 175, 200] # Paquetes enviados
+eje_y_peor = [0.045, 0.0714, 0.147, 0.0879, 0.1517, 0.1223, 0.18, 0.14]
+
+# Crear el gráfico
+plt.scatter(eje_x_peor, eje_y_peor, color='orange', s=40)
+
+# Añadir título y etiquetas
+plt.title('Paquetes con delay')
+plt.xlabel('Cant. de paquetes enviados')
+plt.ylabel('Porcentaje de paquetes que llegan con delay')
+
+plt.xticks(eje_x_peor)
+
+# Añadir cuadrícula
+plt.grid(True)
+
+# # Guardar gráfico
+ruta_grafico = os.path.join('../Gráficos', 'porcentaje_delay.png')
+plt.savefig(ruta_grafico)
+
+# Mostrar el gráfico
+plt.show()
+
+
 '''
 25 paquetes
 Cantidad de paquetes enviados: 25
